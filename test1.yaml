@@ -1,7 +1,0 @@
-L2VNI:
-- id: 10
-  name: name1
-  segment: 100010
-- id: 100
-  name: name2
-  segment: 100100
