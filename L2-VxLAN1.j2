@@ -1,8 +1,0 @@
-{% if 'L2VNI' in host.facts %}
-{% set john = host.facts.L2VNI %}
-{% for n in john %}
-vlan {{ n.id }}
-name {{ n.name }}
-vn-segment {{n.segment}}
-{% endfor %}
-{% endif %}
