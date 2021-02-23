@@ -1,0 +1,48 @@
+---
+# tasks file for leaf
+
+ - name: CREATE VLAN AND MAP VNI
+   nxos_vlan:
+      vlan_id: "{{ item.id }}"
+      mapped_vni: "{{ item.segment }}"
+      name: "{{ item.name }}"
+   with_items: "{{ L2VNI }}"
+
+ - name: Interface VTEP
+   nxos_vxlan_vtep:
+      interface: nve1
+      description: default
+      host_reachability: true
+      source_interface: Loopback0
+      shutdown: no
+
+ - name: NVE1-MULTICAST-MAPPING
+   nxos_vxlan_vtep_vni:
+      interface: nve1
+      vni: "{{ item.segment }}"
+      multicast_group: "{{ item.multicast }}"
+   with_items: "{{ L2VNI }}"
+
+ - name: EVPN-CONFIG
+   nxos_evpn_vni:
+      vni: "{{ item.segment }}"
+      route_distinguisher: auto
+      route_target_import: auto
+      route_target_export: auto
+      state: present
+   with_items: "{{ L2VNI }}"
+
+
+ - name: Configure COMPLETE-FABRIC-FORWARDING
+   nxos_config:
+      parents: interface vlan {{ item.id}}
+      lines:
+        - description {{ item.name }}
+        - vrf member {{ item.tenant }}
+        - ip address {{ item.ip }} tag {{ item.id }}
+        - no ip redirects
+        - no ipv6 redirects
+        - mtu 9216
+        - fabric forwarding mode anycast-gateway
+        - no shutdown
+   with_items: "{{ L2VNI }}"

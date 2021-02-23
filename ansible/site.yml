@@ -1,0 +1,14 @@
+---
+
+- hosts: leaf
+  remote_user: admin
+  connection: local
+  gather_facts: no
+  roles:
+    - role : leaf
+
+- hosts: spine
+  gather_facts: yes
+  roles:
+    - role : spine
+

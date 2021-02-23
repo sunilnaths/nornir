@@ -1,0 +1,13 @@
+L2VNI:
+- id: 10
+  ip: 10.10.10.1/24
+  multicast: 239.1.1.1
+  name: Name1
+  segment: 100010
+  tenant: PROD-1
+- id: 100
+  ip: 100.100.100.1/24
+  multicast: 239.1.1.1
+  name: Name2
+  segment: 100100
+  tenant: PROD-1
