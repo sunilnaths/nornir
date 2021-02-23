@@ -4,5 +4,25 @@
 vlan {{ n.id }}
 name {{ n.name }}
 vn-segment {{n.segment}}
+interface nve1
+no shutdown
+host-reachability protocol bgp
+source-interface loopback1
+member vni {{ n.segment}}
+mcast-group {{ n.multicast }}
+evpn
+vni {{ n.segment }} l2
+rd {{ n.id }}:{{ n.segment }}
+route-target import auto
+route-target export  auto
+interface Vlan {{ n.id }}
+description {{ n.name }} SVI - {{n.id}}
+no shutdown
+mtu 9216
+vrf member  {{ n.tenant }}
+no ip redirects
+ip address {{ n.ip }} tag {{ n.id }}
+no ipv6 redirects
+fabric forwarding mode anycast-gateway
 {% endfor %}
 {% endif %}

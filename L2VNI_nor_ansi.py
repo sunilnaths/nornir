@@ -7,60 +7,69 @@ from nornir_netmiko.tasks import netmiko_send_config
 from user_login import user_login
 from nornir.core.filter import F
 
+
 user_login()
 nr = InitNornir(config_file="config.yaml")
 task1 = nr.filter(F(groups__contains='spine'))
 
 vlan_list = []
 name_list = []
+multi_list = []
+tenant_list = []
+ip_list = []
 vn_list = []
-
-
-def user_log():
-    total = int(input('enter total vlan : '))
+vn_seg_name = []
+tenant = input('enter tenant name ')
+tenant_list.append(tenant)
+total = int(input('enter total vlan : '))
+for i in range(1, total):
     while len(vlan_list) < total:
-        vlan = int(input('enter vlan no:'))
-        name_vlan = str(input('enter vlan name:'))
+        vlan = int(input('Please enter vlan %d no: ' % i))
+        name_vlan = str(input('Please enter vlan %d name: ' % i))
+        ip = str(input('Please enter %d ip address no:  ' % i))
+        multi = str(input('Please enter %d multicast address no:  ' % i))
         vlan_list.append(vlan)
         name_list.append(name_vlan)
+        ip_list.append(ip)
+        multi_list.append(multi)
+        i = i+1
 
-    def vn_seg(vlan_list):
-        for i in vlan_list:
-            a = str(i)
-            k = len(a)
-            if k == 1:
-                vn_seg1 = str(10000) + a
-            elif k == 2:
-                vn_seg1 = str(1000) + a
-            elif k == 3:
-                vn_seg1 = str(100) + a
-            elif k == 4:
-                vn_seg1 = str(10) + a
-            else:
-                print("high")
-                exit()
-            vn_list.append(int(vn_seg1))
-        return int(vn_seg1)
+
+def vn_seg(vlan_list):
+    for i in vlan_list:
+        a = str(i)
+        k = len(a)
+        if k == 1:
+            vn_seg1 = str(10000) + a
+        elif k == 2:
+            vn_seg1 = str(1000) + a
+        elif k == 3:
+            vn_seg1 = str(100) + a
+        elif k == 4:
+            vn_seg1 = str(10) + a
+        else:
+            print("high")
+            exit()
+        vn_list.append(int(vn_seg1))
+    return int(vn_seg1)
     vn_seg(vlan_list)
     return vlan_list, name_list
 
 
-def vlan_vn_seg_name():
-    vlan_vn_seg_name = []
+def vlan_vn_seg_name(vlan_list, multi_list, vn_list, name_list, tenant_list):
     n = len(vlan_list)
     for i in range(n):
         list = {'id': vlan_list[i], 'segment': vn_list[i],
-                'name': name_list[i]}
-        vlan_vn_seg_name.append(list)
-    return vlan_vn_seg_name
+                'name': name_list[i], 'multicast': multi_list[i], 'tenant':
+                tenant_list[0], 'ip': ip_list[i]}
+        vn_seg_name.append(list)
+    return vn_seg_name
 
 
-user_log()
-vlan_vn_seg_name()
-
-
+vn_seg(vlan_list)
 config1 = dict()
-config1 = vlan_vn_seg_name()
+config1 = vlan_vn_seg_name(vlan_list, multi_list, vn_list, name_list,
+                           tenant_list)
 
 final_list = {'L2VNI': config1}
 print(final_list)
@@ -68,11 +77,6 @@ print(final_list)
 
 with open(r'test1.yaml', 'w') as file:
     documents = yaml.dump(final_list, file, default_flow_style=False)
-
-
-print("this is v : ",  vlan_list)
-print("this is n : ", name_list)
-print("this is vn : ", vn_list)
 
 
 def load_vars(task1):
