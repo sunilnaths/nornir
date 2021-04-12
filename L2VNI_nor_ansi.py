@@ -4,11 +4,11 @@ from nornir_utils.plugins.functions import print_result, print_title
 from nornir_utils.plugins.tasks.data import load_yaml
 from nornir_jinja2.plugins.tasks import template_file
 from nornir_netmiko.tasks import netmiko_send_config
-from user_login import user_login
+# from user_login import user_login
 from nornir.core.filter import F
 
 
-user_login()
+# user_login()
 nr = InitNornir(config_file="config.yaml")
 task1 = nr.filter(F(groups__contains='spine'))
 
@@ -80,7 +80,7 @@ with open(r'test1.yaml', 'w') as file:
 
 
 def load_vars(task1):
-    data = task1.run(task=load_yaml, file='/home/sunil/my-nornir/test1.yaml')
+    data = task1.run(task=load_yaml, file='test10.yaml')
     task1.host["facts"] = data.result
     print_result(data.result)
     basic_configuration(task1)
